@@ -1,4 +1,4 @@
-# PID-detector
+# Crash Detector
 This is a Linux-based tool that helps continuously detect the PID of the process you want to monitor and check if a crash has occurred.
 
 ## usage
