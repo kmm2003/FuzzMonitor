@@ -5,6 +5,6 @@ Using Crash Detector, you can easily determine if a crash has occurred during fu
 
 ## usage
 ```
-syntax: ./pid_detector.sh <process name list>
-example: ./pid_detector.sh "bluetooth|bsa_server"
+syntax: ./keycra.sh <process name list>
+example: ./keycra.sh "bluetooth|bsa_server"
 ```
