@@ -22,8 +22,8 @@
 
 1. Clone the repository:
     ```sh
-    git clone https://github.com/kmm2003/Crash-Detector.git
-    cd Crash-Detector
+    git clone https://github.com/kmm2003/Keycra.sh.git
+    cd Keycra.sh
     ```
 
 2. Make the script executable:
