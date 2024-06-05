@@ -116,7 +116,7 @@ flag=0
 while true
 do
     # Get the current process IDs and their executable names, then sort them
-    ps -ef | grep -i -E $1 | grep -v grep | ./busybox awk '{print $2, $8}' | sort -n > current_pids.txt
+    ps -ef | grep -i -E $1 | grep -v grep | awk '{print $2, $8}' | sort -n > current_pids.txt
 
     # If it's the first iteration, initialize the before_pids.txt file
     if [ $flag -eq 0 ]; then
