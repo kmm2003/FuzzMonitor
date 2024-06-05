@@ -35,4 +35,6 @@
 
 Run the script with the following syntax:
 ```sh
-sudo ./keycra.sh <process name list>
+syntax: ./keycra.sh <process name list>
+example: ./keycra.sh "bluetooth|bsa_server"
+```
