@@ -46,32 +46,41 @@ sysctl -p
 
 echo "Core dump configuration process completed."
 
+# Clear the terminal screen
 clear
 
+# Display a banner
 echo "
 
- #####                                    ######                                                 
-#     # #####    ##    ####  #    #       #     # ###### ##### ######  ####  #####  ####  #####  
-#       #    #  #  #  #      #    #       #     # #        #   #      #    #   #   #    # #    # 
-#       #    # #    #  ####  ######       #     # #####    #   #####  #        #   #    # #    # 
-#       #####  ######      # #    #       #     # #        #   #      #        #   #    # #####  
-#     # #   #  #    # #    # #    #       #     # #        #   #      #    #   #   #    # #   #  
- #####  #    # #    #  ####  #    #       ######  ######   #   ######  ####    #    ####  #    # 
+                                                                        
+ ##  ##   ######   ##  ##    ####    #####      ##      #####   ##  ##  
+ ## ##    ##       ##  ##   ##  ##   ##  ##    ####    ###      ##  ##  
+ ####     ####      ####    ##       ##  ##   ##  ##    ###     ######  
+ ####     ##         ##     ##       #####    ######     ###    ##  ##  
+ ## ##    ##         ##     ##  ##   ## ##    ##  ##      ###   ##  ##  
+ ##  ##   ######     ##      ####    ##  ##   ##  ##   #####    ##  ##  
+                                                                        
                                                                                                  
-                                                                                          dev. keyme
-
+                                                                 dev. keyme
 "
 
+# Check if the script is run with the correct number of arguments
 if [ "$#" -ne 1 ]; then
     echo "[!] Please run it again using the method below."
     echo "[*] syntax: ./keycra.sh <process name list>"
-    echo "[*] example: ./keycra.sh \"bluetooth|wifi\""
+    echo "[*] example: ./keycra.sh \"bluetooth|wifi|can\""
     exit 1
 fi
 
-read -p "[+] System Time: $(date). Are you going to set the system time manually? (y/n): " user_input
+# Print the current system time
+echo "[+] System Time: $(date)."
+
+# Prompt the user to manually set the system time
+echo -n -e "[+] Are you going to set the system time manually? (y/n): "
+read user_input
 user_input=$(echo "$user_input" | tr '[:upper:]' '[:lower:]')
 
+# If user chooses to set the time manually
 if [ "$user_input" == "y" ]; then
     echo " [+] Please enter the time to set in the following format."
     echo " [*] syntax: <year><month><date> <hour><min><sec>"
@@ -81,54 +90,57 @@ if [ "$user_input" == "y" ]; then
     year=${user_date:0:4}
     month=${user_date:4:2}
     day=${user_date:6:2}
-    hour=${user_date:9:2}
-    minute=${user_date:11:2}
-    second=${user_date:13:2}
+    hour=${user_date:8:2}
+    minute=${user_date:10:2}
+    second=${user_date:12:2}
 
+    # Format the user input date and time
     result_time="${month}${day}${hour}${minute}${year}.${second}"
     date $result_time
 fi
 
+# Prompt the user to initialize the report_crash.log file
 read -p "[+] Do you want to initialize the report_crash.log file? (y/n): " user_input
 user_input=$(echo "$user_input" | tr '[:upper:]' '[:lower:]')
 
+# If user chooses to initialize the report_crash.log file
 if [ "$user_input" == "y" ]; then
     echo "" > report_crash.log
     echo "[*] The report_crash.log file has been initialized."
 fi
 
-echo "[*] Starting crash dectector"
+echo "[*] Starting crash detector"
 flag=0
 
+# Main loop for monitoring crashes
 while true
 do
-    ps -ef | grep -i -E $1 | grep -v grep | awk '{print $2, $8}' | sort -n > current_pids.txt
+    # Get the current process IDs and their executable names, then sort them
+    ps -ef | grep -i -E $1 | grep -v grep | ./busybox awk '{print $2, $8}' | sort -n > current_pids.txt
 
+    # If it's the first iteration, initialize the before_pids.txt file
     if [ $flag -eq 0 ]; then
         flag=1
         cp current_pids.txt before_pids.txt
     fi
 
+    # Compare the current and previous process IDs to detect crashes
     diff_output=$(diff before_pids.txt current_pids.txt)
     if [ -z "$diff_output" ]; then
         :
     else
+        # Log the crash details
         echo "===================[!] I found a crash in the process!===================" | tee -a report_crash.log
         echo "[+] crash time: $(date)" | tee -a report_crash.log
-        echo "------------------------------diff output-------------------------------" | tee -a report_crash.log
         echo "$diff_output" | tee -a report_crash.log
-        echo "------------------------------current_pids.txt----------------------------" | tee -a report_crash.log
-        cat current_pids.txt | tee -a report_crash.log
-        echo "------------------------------before_pids.txt-----------------------------" | tee -a report_crash.log
-        cat before_pids.txt | tee -a report_crash.log
-        echo "-------------------------------------------------------------------------" | tee -a report_crash.log
         echo "========================================================================="  | tee -a report_crash.log
-        echo "
-        ...
-        " | tee -a report_crash.log
+        echo " " | tee -a report_crash.log
     fi
 
+    # Update the before_pids.txt file for the next iteration
     cp current_pids.txt before_pids.txt
+
+    # Copy core dumps to the crash directory in the home folder
     cp -r /var/crash/* ~/crash/
     sleep 1
 done
