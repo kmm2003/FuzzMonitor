@@ -140,7 +140,5 @@ do
     # Update the before_pids.txt file for the next iteration
     cp current_pids.txt before_pids.txt
 
-    # Copy core dumps to the crash directory in the home folder
-    cp -r /var/crash/* ~/crash/
     sleep 1
 done
