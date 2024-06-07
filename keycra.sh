@@ -90,9 +90,9 @@ if [ "$user_input" == "y" ]; then
     year=${user_date:0:4}
     month=${user_date:4:2}
     day=${user_date:6:2}
-    hour=${user_date:8:2}
-    minute=${user_date:10:2}
-    second=${user_date:12:2}
+    hour=${user_date:9:2}
+    minute=${user_date:11:2}
+    second=${user_date:13:2}
 
     # Format the user input date and time
     result_time="${month}${day}${hour}${minute}${year}.${second}"
