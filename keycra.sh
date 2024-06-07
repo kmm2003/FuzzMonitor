@@ -68,7 +68,7 @@ echo "
 if [ "$#" -ne 1 ]; then
     echo "[!] Please run it again using the method below."
     echo "[*] syntax: ./keycra.sh <process name list>"
-    echo "[*] example: ./keycra.sh \"bluetooth|wifi""
+    echo "[*] example: ./keycra.sh \"bluetooth|wifi\""
     exit 1
 fi
 
