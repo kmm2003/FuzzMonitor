@@ -1,53 +1,52 @@
 #!/bin/bash
 
+mount -o rw,remount /
+
 # Check current core dump setting
-echo "Checking current core dump setting..."
+echo "[*] Checking current core dump setting..."
 current_core_dump=$(ulimit -c)
-echo "Current core dump setting: $current_core_dump"
+echo "[*] Current core dump setting: $current_core_dump"
 
 # Enable core dump if it is disabled
 if [ "$current_core_dump" -eq 0 ]; then
-    echo "Core dump is currently disabled. Enabling core dump..."
+    echo "[+] Core dump is currently disabled. Enabling core dump..."
     ulimit -c unlimited
-    echo "Core dump enabled."
+    echo "[+] Core dump enabled."
 else
-    echo "Core dump is already enabled."
+    echo "[!] Core dump is already enabled."
 fi
 
 # Backup existing configuration files before modifying
-echo "Backing up existing configuration files..."
+echo "[*] Backing up existing configuration files..."
 cp /etc/security/limits.conf /etc/security/limits.conf.bak
 cp /etc/sysctl.conf /etc/sysctl.conf.bak
-echo "Backup completed."
+echo "[*] Backup completed."
 
 # Configure core dump location in /etc/security/limits.conf
-echo "Configuring core dump settings in /etc/security/limits.conf..."
+echo "[*] Configuring core dump settings in /etc/security/limits.conf..."
 if ! grep -q "\* soft core unlimited" /etc/security/limits.conf; then
     echo "* soft core unlimited" >> /etc/security/limits.conf
 fi
 if ! grep -q "\* hard core unlimited" /etc/security/limits.conf; then
     echo "* hard core unlimited" >> /etc/security/limits.conf
 fi
-echo "Core dump settings configured in /etc/security/limits.conf."
+echo "[*] Core dump settings configured in /etc/security/limits.conf."
 
 # Configure core dump file pattern in /etc/sysctl.conf
-echo "Configuring core dump file pattern in /etc/sysctl.conf..."
+echo "[*] Configuring core dump file pattern in /etc/sysctl.conf..."
 if ! grep -q "kernel.core_pattern" /etc/sysctl.conf; then
     echo "kernel.core_pattern=/var/crash/core.%e.%p.%h.%t" >> /etc/sysctl.conf
 fi
 if ! grep -q "fs.suid_dumpable" /etc/sysctl.conf; then
     echo "fs.suid_dumpable = 1" >> /etc/sysctl.conf
 fi
-echo "Core dump file pattern configured in /etc/sysctl.conf."
+echo "[*] Core dump file pattern configured in /etc/sysctl.conf."
 
 # Apply changes
-echo "Applying sysctl changes..."
+echo "[*] Applying sysctl changes..."
 sysctl -p
 
-echo "Core dump configuration process completed."
-
-# Clear the terminal screen
-clear
+echo "[*] Core dump configuration process completed."
 
 # Display a banner
 echo "
@@ -61,7 +60,7 @@ echo "
  ##  ##   ######     ##      ####    ##  ##   ##  ##   #####    ##  ##  
                                                                         
                                                                                                  
-                                                                 dev. keyme
+                                                                dev. keyme
 "
 
 # Check if the script is run with the correct number of arguments
@@ -116,7 +115,7 @@ flag=0
 while true
 do
     # Get the current process IDs and their executable names, then sort them
-    ps -ef | grep -i -E $1 | grep -v grep | awk '{print $2, $8}' | sort -n > current_pids.txt
+    ps -ef | grep -i -E $1 | grep -v grep | ./busybox awk '{print $2, $8}' | sort -n > current_pids.txt
 
     # If it's the first iteration, initialize the before_pids.txt file
     if [ $flag -eq 0 ]; then
