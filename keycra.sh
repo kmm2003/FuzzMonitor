@@ -24,7 +24,13 @@ cp /etc/security/limits.conf /etc/security/limits.conf.bak || { echo "[!] Failed
 cp /etc/sysctl.conf /etc/sysctl.conf.bak || { echo "[!] Failed to backup sysctl.conf"; exit 1; }
 echo "[*] Backup completed."
 
-# Configure core dump settings in /etc/security/limits.conf
+# Configure core dump settings in /etc/security/limits.conf (root)
+echo "[*] Configuring core dump settings for root in /etc/security/limits.conf..."
+sed -i 's/root.*soft.*core.*0/root             soft    core            unlimited/' /etc/security/limits.conf || { echo "[!] Failed to update soft core limit for root"; exit 1; }
+sed -i 's/root.*hard.*core.*0/root             hard    core            unlimited/' /etc/security/limits.conf || { echo "[!] Failed to update hard core limit for root"; exit 1; }
+echo "[*] Core dump settings for root configured in /etc/security/limits.conf."
+
+# Configure core dump settings in /etc/security/limits.conf (other)
 echo "[*] Configuring core dump settings in /etc/security/limits.conf..."
 sed -i 's/\*.*soft.*core.*0/*                soft    core            unlimited/' /etc/security/limits.conf || { echo "[!] Failed to update soft core limit"; exit 1; }
 sed -i 's/\*.*hard.*core.*0/*                hard    core            unlimited/' /etc/security/limits.conf || { echo "[!] Failed to update hard core limit"; exit 1; }
