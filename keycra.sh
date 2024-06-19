@@ -121,11 +121,22 @@ fi
 echo "[*] Starting crash detector"
 flag=0
 
+# Function to print the date every 10 minutes
+print_date() {
+    while true; do
+        echo "Current Date and Time: $(date)"
+        sleep 600  # 600 seconds = 10 minutes
+    done
+}
+
+# Start the date printing function in the background
+print_date &
+
 # Main loop for monitoring crashes
 while true
 do
     # Get the current process IDs and their executable names, then sort them
-    ps -ef | grep -i -E $1 | grep -v -E "bash|grep" | ./busybox awk '{print $2, $8}' | sort -n > current_pids.txt
+    ps -ef | grep -i -E $1 | grep -v -E "bash|grep" | awk '{print $2, $8}' | sort -n > current_pids.txt
 
     # If it's the first iteration, initialize the before_pids.txt file
     if [ $flag -eq 0 ]; then
