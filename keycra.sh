@@ -119,20 +119,27 @@ start_crash_detector() {
 # Remount the root filesystem
 remount_root_rw
 
-# Check and enable core dump
-check_enable_core_dump
+# Prompt the user to set core dump activation
+echo -n -e "[+] Do you want to set the core dump activation setting? (y/n): "
+read core_dump_activation
+core_dump_activation=$(echo "$core_dump_activation" | tr '[:upper:]' '[:lower:]')
 
-# Backup configuration files
-backup_configs
+if [ "$core_dump_activation" == "y" ]; then
+    # Check and enable core dump
+    check_enable_core_dump
 
-# Configure core dump settings
-configure_core_dump_settings
+    # Backup configuration files
+    backup_configs
 
-# Configure core dump file pattern
-configure_core_pattern
+    # Configure core dump settings
+    configure_core_dump_settings
 
-# Apply sysctl changes
-apply_sysctl_changes
+    # Configure core dump file pattern
+    configure_core_pattern
+
+    # Apply sysctl changes
+    apply_sysctl_changes
+fi
 
 # Display the banner
 display_banner
