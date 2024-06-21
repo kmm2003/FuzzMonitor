@@ -1,5 +1,4 @@
 #!/bin/bash
-set -e
 
 # Function to remount the root filesystem in read-write mode
 remount_root_rw() {
@@ -46,9 +45,9 @@ configure_core_dump_settings() {
 configure_core_pattern() {
     echo "[*] Configuring core dump file pattern in /etc/sysctl.conf..."
     if grep -q -F "kernel.core_pattern" /etc/sysctl.conf; then
-        sed -i 's|^kernel.core_pattern=.*|kernel.core_pattern=/var/crash/core.%e.%p.%h.%t|' /etc/sysctl.conf || { echo "[!] Failed to update core pattern"; exit 1; }
+        sed -i 's|^kernel.core_pattern=.*|kernel.core_pattern=/home/root/fuzz/crash/core.%e.%p.%h.%t|' /etc/sysctl.conf || { echo "[!] Failed to update core pattern"; exit 1; }
     else
-        echo "kernel.core_pattern=/var/crash/core.%e.%p.%h.%t" >> /etc/sysctl.conf || { echo "[!] Failed to add core pattern"; exit 1; }
+        echo "kernel.core_pattern=/home/root/fuzz/crash/core.%e.%p.%h.%t" >> /etc/sysctl.conf || { echo "[!] Failed to add core pattern"; exit 1; }
     fi
 
     if grep -q -F "fs.suid_dumpable" /etc/sysctl.conf; then
@@ -78,39 +77,31 @@ display_banner() {
     "
 }
 
-# Function to print date every 10 minutes
-print_date() {
-    while true; do
-        echo "Current Date and Time: $(date)"
-        sleep 600  # 600 seconds = 10 minutes
-    done
-}
-
 # Main crash detection function
 start_crash_detector() {
     echo "[*] Starting crash detector"
     flag=0
 
     while true; do
-        ps -ef | grep -i -E "$1" | grep -v -E "bash|grep" | awk '{print $2, $8}' | sort -n > current_pids.txt
+        ps -ef | grep -i -E "$1" | grep -v -E "bash|grep" | awk '{print $2, $8}' | sort -n > ./fuzz/current_pids.log
 
         if [ $flag -eq 0 ]; then
             flag=1
-            cp current_pids.txt before_pids.txt
+            cp ./fuzz/current_pids.log ./fuzz/before_pids.log
         fi
 
-        diff_output=$(diff before_pids.txt current_pids.txt)
+        diff_output=$(diff ./fuzz/before_pids.log ./fuzz/current_pids.log)
         if [ -z "$diff_output" ]; then
             :
         else
-            echo "===================[!] I found a crash in the process!===================" | tee -a report_crash.log
-            echo "[+] crash time: $(date)" | tee -a report_crash.log
-            echo "$diff_output" | tee -a report_crash.log
-            echo "========================================================================="  | tee -a report_crash.log
-            echo " " | tee -a report_crash.log
+            echo "===================[!] I found a crash in the process!===================" | tee -a ./fuzz/report_crash.log
+            echo "[+] crash time: $(date)" | tee -a ./fuzz/report_crash.log
+            echo "$diff_output" | tee -a ./fuzz/report_crash.log
+            echo "========================================================================="  | tee -a ./fuzz/report_crash.log
+            echo " " | tee -a ./fuzz/report_crash.log
         fi
 
-        cp current_pids.txt before_pids.txt
+        cp ./fuzz/current_pids.log ./fuzz/before_pids.log
 
         sleep 1
     done
@@ -119,12 +110,26 @@ start_crash_detector() {
 # Remount the root filesystem
 remount_root_rw
 
+# Check if a directory called "fuzz" exists in the current path
+if [ ! -d "fuzz" ]; then
+    echo "[+] Directory 'fuzz' does not exist. Creating directory..."
+    mkdir fuzz
+    chmod 777 fuzz
+    echo "[*] Directory 'fuzz' created."
+else
+    echo "[!] Directory 'fuzz' already exists."
+fi
+
 # Prompt the user to set core dump activation
 echo -n -e "[+] Do you want to set the core dump activation setting? (y/n): "
 read core_dump_activation
 core_dump_activation=$(echo "$core_dump_activation" | tr '[:upper:]' '[:lower:]')
 
 if [ "$core_dump_activation" == "y" ]; then
+
+    mkdir -p ./fuzz/crash
+    chmod 777 ./fuzz/crash
+
     # Check and enable core dump
     check_enable_core_dump
 
@@ -170,27 +175,24 @@ if [ "$user_input" == "y" ]; then
     year=${user_date:0:4}
     month=${user_date:4:2}
     day=${user_date:6:2}
-    hour=${user_date:8:2}
-    minute=${user_date:10:2}
-    second=${user_date:12:2}
+    hour=${user_date:9:2}
+    minute=${user_date:11:2}
+    second=${user_date:13:2}
 
     # Format the user input date and time
     result_time="${month}${day}${hour}${minute}${year}.${second}"
     date $result_time
 fi
 
-# Prompt the user to initialize the report_crash.log file
-read -p "[+] Do you want to initialize the report_crash.log file? (y/n): " user_input
+# Prompt the user to initialize the ./fuzz/report_crash.log file
+read -p "[+] Do you want to initialize the ./fuzz/report_crash.log file? (y/n): " user_input
 user_input=$(echo "$user_input" | tr '[:upper:]' '[:lower:]')
 
-# If user chooses to initialize the report_crash.log file
+# If user chooses to initialize the ./fuzz/report_crash.log file
 if [ "$user_input" == "y" ]; then
-    echo "" > report_crash.log
-    echo "[*] The report_crash.log file has been initialized."
+    echo "" > ./fuzz/report_crash.log
+    echo "[*] The ./fuzz/report_crash.log file has been initialized."
 fi
-
-# Start the date printing function in the background
-print_date &
 
 # Start the main crash detection loop
 start_crash_detector "$1"
