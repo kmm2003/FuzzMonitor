@@ -92,10 +92,10 @@ start_crash_detector() {
 
         diff_output=$(diff ./fuzz/before_pids.log ./fuzz/current_pids.log)
         if echo "$diff_output" | grep -q '^-[0-9]'; then
-            echo "===================[!] I found a crash in the process!===================" | tee -a ./fuzz/report_crash.log
+            echo "===================[!] A process crash has been detected!===================" | tee -a ./fuzz/report_crash.log
             echo "[+] crash time: $(date)" | tee -a ./fuzz/report_crash.log
             echo "$diff_output" | tee -a ./fuzz/report_crash.log
-            echo "========================================================================="  | tee -a ./fuzz/report_crash.log
+            echo "============================================================================"  | tee -a ./fuzz/report_crash.log
             echo " " | tee -a ./fuzz/report_crash.log
         fi
 
