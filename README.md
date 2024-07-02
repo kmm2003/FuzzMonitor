@@ -21,7 +21,7 @@ FuzzMonitor is a powerful shell script designed to monitor processes, detect cra
 
 1. Clone the repository:
     ```sh
-    git clone https://github.com/yourusername/FuzzMonitor.git
+    git clone https://github.com/kmm2003/FuzzMonitor.git
     cd FuzzMonitor
     ```
 
@@ -34,5 +34,6 @@ FuzzMonitor is a powerful shell script designed to monitor processes, detect cra
 
 Run the script with the following syntax:
 ```sh
-./FuzzMonitor.sh <process name list>
+syntax: ./FuzzMonitor.sh <process name list>
+sample: "wpa_supplicant|dhclient|bluetoothd|networkmanager"
 ```
