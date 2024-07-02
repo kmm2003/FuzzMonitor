@@ -35,5 +35,5 @@ FuzzMonitor is a powerful shell script designed to monitor processes, detect cra
 Run the script with the following syntax:
 ```sh
 syntax: ./FuzzMonitor.sh <process name list>
-sample: "wpa_supplicant|dhclient|bluetoothd|networkmanager"
+sample: ./FuzzMonitor.sh "wpa_supplicant|dhclient|bluetoothd|networkmanager"
 ```
