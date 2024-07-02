@@ -1,40 +1,38 @@
 # FuzzMonitor
 
-## Overview
-
-`FuzzMonitor` is a shell script designed to manage core dump settings, prompt user interactions for time setting and file initialization, and monitor processes for crashes. It provides a comprehensive solution for enabling and configuring core dumps, as well as logging and detecting process crashes.
+FuzzMonitor is a powerful shell script designed to monitor processes, detect crashes, and manage core dumps. It helps system administrators and developers keep track of process crashes and configure core dumps efficiently. 
 
 ## Features
 
-- Checks and enables core dump settings if disabled.
-- Configures core dump settings in system files.
-- Prompts the user to set the system time manually.
-- Initializes log files based on user input.
-- Monitors specified processes for crashes and logs crash details.
-- Copies core dumps to a user-specified directory for further analysis.
+- Monitors specified processes for crashes
+- Configures core dumps to be stored in a designated directory
+- Provides real-time crash detection and logging
+- Automatically manages core dump settings
+- User prompts for setting system time and initializing logs
 
-## Prerequisites
+## Getting Started
 
-- Unix-like operating system (e.g., Linux).
-- Superuser (root) privileges to modify system settings.
+### Prerequisites
 
-## Installation
+- Linux-based system
+- Root privileges to modify system configurations
+
+### Installation
 
 1. Clone the repository:
     ```sh
-    git clone https://github.com/kmm2003/Keycra.sh.git
-    cd Keycra.sh
+    git clone https://github.com/yourusername/FuzzMonitor.git
+    cd FuzzMonitor
     ```
 
 2. Make the script executable:
     ```sh
-    chmod +x keycra.sh
+    chmod +x FuzzMonitor.sh
     ```
 
 ## Usage
 
 Run the script with the following syntax:
 ```sh
-syntax: ./keycra.sh <process name list>
-example: ./keycra.sh "bluetooth|bsa_server"
+./FuzzMonitor.sh <process name list>
 ```
