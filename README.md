@@ -1,8 +1,8 @@
-# Keycra.sh
+# FuzzMonitor
 
 ## Overview
 
-`keycra.sh` is a shell script designed to manage core dump settings, prompt user interactions for time setting and file initialization, and monitor processes for crashes. It provides a comprehensive solution for enabling and configuring core dumps, as well as logging and detecting process crashes.
+`FuzzMonitor` is a shell script designed to manage core dump settings, prompt user interactions for time setting and file initialization, and monitor processes for crashes. It provides a comprehensive solution for enabling and configuring core dumps, as well as logging and detecting process crashes.
 
 ## Features
 
