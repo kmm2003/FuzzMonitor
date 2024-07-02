@@ -1,5 +1,19 @@
 #!/bin/bash
 
+# Check if the crash count file exists, if not, create it and initialize with 0
+if [ ! -f ./fuzz/crash_count.txt ]; then
+    echo "0" > ./fuzz/crash_count.txt
+fi
+
+# Read the current crash count
+crash_count=$(cat ./fuzz/crash_count.txt)
+
+# Function to increment the crash count
+increment_crash_count() {
+    crash_count=$((crash_count + 1))
+    echo $crash_count > ./fuzz/crash_count.txt
+}
+
 # Function to remount the root filesystem in read-write mode
 remount_root_rw() {
     echo "[*] Remounting root filesystem in read-write mode..."
@@ -92,8 +106,9 @@ start_crash_detector() {
 
         diff_output=$(diff ./fuzz/before_pids.log ./fuzz/current_pids.log)
         if echo "$diff_output" | grep -q '^-[0-9]'; then
-            echo "===================[!] A process crash has been detected!===================" | tee -a ./fuzz/report_crash.log
-            echo "[+] crash time: $(date)" | tee -a ./fuzz/report_crash.log
+            increment_crash_count
+            echo "===================[!] A process crash has been detected! [Crash Count: $crash_count]===================" | tee -a ./fuzz/report_crash.log
+            echo "[+] Crash time: $(date)" | tee -a ./fuzz/report_crash.log
             echo "$diff_output" | tee -a ./fuzz/report_crash.log
             echo "============================================================================"  | tee -a ./fuzz/report_crash.log
             echo " " | tee -a ./fuzz/report_crash.log
@@ -190,6 +205,14 @@ user_input=$(echo "$user_input" | tr '[:upper:]' '[:lower:]')
 if [ "$user_input" == "y" ]; then
     echo "" > ./fuzz/report_crash.log
     echo "[*] The ./fuzz/report_crash.log file has been initialized."
+fi
+
+# Prompt the user to set core dump activation
+read -p "[+] Do you want to set the count setting? (y/n): " count_yn
+count_yn=$(echo "$count_yn" | tr '[:upper:]' '[:lower:]')
+
+if [ "$count_yn" == "y" ]; then
+    echo "0" > ./fuzz/crash_count.txt
 fi
 
 # Start the main crash detection loop
