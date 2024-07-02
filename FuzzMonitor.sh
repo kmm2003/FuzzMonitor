@@ -100,7 +100,7 @@ start_crash_detector() {
     flag=0
 
     while true; do
-        ps -ef | grep -i -E "$1" | grep -v -E "bash|grep" | ./busybox awk '{print $2, $8}' | sort -n > ./fuzz/current_pids.log
+        ps -ef | grep -i -E "$1" | grep -v -E "bash|grep" | awk '{print $2, $8}' | sort -n > ./fuzz/current_pids.log
 
         if [ $flag -eq 0 ]; then
             flag=1
