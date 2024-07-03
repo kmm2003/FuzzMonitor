@@ -1,13 +1,5 @@
 #!/bin/bash
 
-# Check if the crash count file exists, if not, create it and initialize with 0
-if [ ! -f ./fuzz/crash_count.txt ]; then
-    echo "0" > ./fuzz/crash_count.txt
-fi
-
-# Read the current crash count
-crash_count=$(cat ./fuzz/crash_count.txt)
-
 # Function to increment the crash count
 increment_crash_count() {
     crash_count=$((crash_count + 1))
@@ -123,6 +115,14 @@ start_crash_detector() {
     done
 }
 
+# Check if the script is run with the correct number of arguments
+if [ "$#" -ne 1 ]; then
+    echo "[!] Please run it again using the method below."
+    echo "[*] syntax: ./FuzzMonitor.sh <process name list>"
+    echo "[*] example: ./FuzzMonitor.sh \"wpa_supplicant|dhclient|bluetoothd|networkmanager\""
+    exit 1
+fi
+
 # Remount the root filesystem
 remount_root_rw
 
@@ -165,14 +165,6 @@ fi
 # Display the banner
 display_banner
 
-# Check if the script is run with the correct number of arguments
-if [ "$#" -ne 1 ]; then
-    echo "[!] Please run it again using the method below."
-    echo "[*] syntax: ./FuzzMonitor.sh <process name list>"
-    echo "[*] example: ./FuzzMonitor.sh \"wpa_supplicant|dhclient|bluetoothd|networkmanager\""
-    exit 1
-fi
-
 # Print the current system time
 echo "[+] System Time: $(date)."
 
@@ -210,6 +202,11 @@ if [ "$user_input" == "y" ]; then
     echo "[*] The ./fuzz/report_crash.log file has been initialized."
 fi
 
+# Check if the crash count file exists, if not, create it and initialize with 0
+if [ ! -f ./fuzz/crash_count.txt ]; then
+    echo "0" > ./fuzz/crash_count.txt
+fi
+
 # Prompt the user to set core dump activation
 read -p "[+] Do you want to set the count setting? (y/n): " count_yn
 count_yn=$(echo "$count_yn" | tr '[:upper:]' '[:lower:]')
@@ -217,6 +214,9 @@ count_yn=$(echo "$count_yn" | tr '[:upper:]' '[:lower:]')
 if [ "$count_yn" == "y" ]; then
     echo "0" > ./fuzz/crash_count.txt
 fi
+
+# Read the current crash count
+crash_count=$(cat ./fuzz/crash_count.txt)
 
 # Start the main crash detection loop
 start_crash_detector "$1"
