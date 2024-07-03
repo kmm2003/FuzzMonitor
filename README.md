@@ -51,4 +51,46 @@ sample: ./FuzzMonitor.sh "bluetoothd|wpa_supplicant|hostapd|networkmanager|dhcli
 3. **Crash Count**: Keeps a count of the number of crashes detected.
 4. **Report and Crash Dump Storage**: The crash reports and core dumps are saved in the `fuzz` directory. The crash report file is named `report_crash.log` and the core dumps are stored in the `fuzz/crash` directory.
 
+## Terminal Example
+```sh
+[*] Remounting root filesystem in read-write mode...
+[*] Checking current core dump setting...
+[*] Current core dump setting: 0
+[+] Core dump is currently disabled. Enabling core dump...
+[+] Core dump enabled.
+[*] Backing up existing configuration files...
+[*] Backup completed.
+[*] Configuring core dump settings for root in /etc/security/limits.conf...
+[*] Core dump settings for root configured in /etc/security/limits.conf.
+[*] Configuring core dump settings in /etc/security/limits.conf...
+[*] Core dump settings configured in /etc/security/limits.conf.
+[*] Configuring core dump file pattern in /etc/sysctl.conf...
+[*] Core dump file pattern configured in /etc/sysctl.conf.
+[*] Applying sysctl changes...
+[*] Core dump configuration process completed.
+
+.########.##.....##.########.########....##.....##..#######..##....##.####.########..#######..########.
+.##.......##.....##......##.......##.....###...###.##.....##.###...##..##.....##....##.....##.##.....##
+.##.......##.....##.....##.......##......####.####.##.....##.####..##..##.....##....##.....##.##.....##
+.######...##.....##....##.......##.......##.###.##.##.....##.##.##.##..##.....##....##.....##.########.
+.##.......##.....##...##.......##........##.....##.##.....##.##..####..##.....##....##.....##.##...##..
+.##.......##.....##..##.......##.........##.....##.##.....##.##...###..##.....##....##.....##.##....##.
+.##........#######..########.########....##.....##..#######..##....##.####....##.....#######..##.....##
+
+                                                                                                dev. keyme
+
+[+] System Time: Mon Jun 24 10:14:30 UTC 2024.
+[+] Are you going to set the system time manually? (y/n): n
+[+] Do you want to initialize the ./fuzz/report_crash.log file? (y/n): y
+[*] The ./fuzz/report_crash.log file has been initialized.
+[+] Do you want to set the count setting? (y/n): y
+```
+```sh
+[*] Starting crash detector
+===================[!] A process crash has been detected! [Crash Count: 1]===================
+[+] Crash time: Mon Jun 24 10:20:30 UTC 2024
+-700 /usr/bin/bluetoothd
+=============================================================================================
+```
+
 This `README.md` file includes all the information about the `FuzzMonitor` project, with a clear explanation of how to use the script and where the logs and core dumps are stored.
