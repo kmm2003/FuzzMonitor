@@ -26,6 +26,29 @@ check_enable_core_dump() {
     fi
 }
 
+# Function to configure or modify Storage option in /etc/systemd/coredump.conf
+configure_coredump_storage() {
+    COREDUMP_CONF="/etc/systemd/coredump.conf"
+
+    if [ -f "$COREDUMP_CONF" ]; then
+        # Check if Storage=none exists
+        if grep -q "^Storage=none" "$COREDUMP_CONF"; then
+            echo "[*] Storage=none already set in $COREDUMP_CONF."
+        # Check if Storage=external exists
+        elif grep -q "^Storage=external" "$COREDUMP_CONF"; then
+            echo "[*] Storage=external already set in $COREDUMP_CONF."
+        else
+            # Storage option doesn't exist, add Storage=external
+            echo "[*] Adding Storage=external to $COREDUMP_CONF."
+            echo "Storage=external" | sudo tee -a "$COREDUMP_CONF" > /dev/null
+        fi
+    else
+        echo "[!] $COREDUMP_CONF does not exist. Creating the file and adding Storage=external."
+        echo "[Coredump]" | sudo tee "$COREDUMP_CONF" > /dev/null
+        echo "Storage=external" | sudo tee -a "$COREDUMP_CONF" > /dev/null
+    fi
+}
+
 # Function to backup configuration files
 backup_configs() {
     echo "[*] Backing up existing configuration files..."
@@ -157,6 +180,9 @@ if [ "$core_dump_activation" == "y" ]; then
 
     # Configure core dump file pattern
     configure_core_pattern
+
+    # Call the function to modify or add Storage option in coredump.conf
+    configure_coredump_storage
 
     # Apply sysctl changes
     apply_sysctl_changes
